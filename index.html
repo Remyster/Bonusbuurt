@@ -56,6 +56,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .badge-aldi{background:#00519e;color:#fff;}
 .badge-plus{background:#e30613;color:#fff;}
 .badge-dirk{background:#e4032e;color:#fff;}
+.badge-dekamarkt{background:#009a44;color:#fff;}
+.badge-vomar{background:#e4032e;color:#fff;}
+.badge-spar{background:#ff6600;color:#fff;}
 .badge-other{background:var(--card2);color:var(--text);}
 .card-body{padding:10px 14px;}
 .deal-product{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;line-height:1.2;margin-bottom:6px;}
@@ -240,7 +243,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="header">
   <div class="logo" id="logoBtn">Bonus<span>Buurt</span></div>
   <div style="display:flex;align-items:center;gap:8px;">
-    <span class="versie-badge">v11</span>
+    <span class="versie-badge">v12</span>
     <div class="live-pill"><div class="live-dot"></div><span id="dealCount">0</span> deals</div>
   </div>
 </div>
@@ -255,14 +258,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <!-- FILTERS (alleen bij feed) -->
 <div class="filter-bar" id="filterBar" style="display:none">
   <div class="filter-rij" id="rijSupermarkt">
-    <div class="filter-chip actief" data-type="supermarkt" data-waarde="alle">🛒 Alle</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Albert Heijn">AH</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Lidl">Lidl</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Jumbo">Jumbo</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Aldi">Aldi</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Plus">Plus</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Dirk">Dirk</div>
-    <div class="filter-chip" data-type="supermarkt" data-waarde="Spar">Spar</div>
+    <div class="filter-chip actief" id="supermarktFilterChip" onclick="openSupermarktPopup()">🛒 Alle supermarkten</div>
   </div>
   <div class="filter-rij" id="rijBuurt">
     <div class="filter-chip actief" id="buurtFilterChip" onclick="openBuurtPopup()">📍 Alle buurten</div>
@@ -322,6 +318,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <select class="form-select" id="f-supermarkt">
         <option>Albert Heijn</option><option>Lidl</option><option>Jumbo</option>
         <option>Aldi</option><option>Plus</option><option>Dirk</option>
+        <option>Dekamarkt</option><option>Vomar</option>
         <option>Spar</option><option>Anders</option>
       </select>
     </div>
@@ -461,6 +458,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 </div>
 
 
+<!-- SUPERMARKT POPUP -->
+<div class="buurt-popup-overlay" id="supermarktPopup" style="display:none" onclick="sluitSupermarktPopup(event)">
+  <div class="buurt-popup">
+    <div class="buurt-popup-header">
+      <div class="buurt-popup-titel">🛒 Kies supermarkt</div>
+      <button class="buurt-popup-sluit" onclick="sluitSupermarktPopup()">✕</button>
+    </div>
+    <div class="buurt-popup-lijst" id="supermarktPopupLijst"></div>
+  </div>
+</div>
+
 <!-- BUURT POPUP -->
 <div class="buurt-popup-overlay" id="buurtPopup" style="display:none" onclick="sluitBuurtPopup(event)">
   <div class="buurt-popup">
@@ -565,12 +573,11 @@ function initLogo() {
 
 // === FILTERS ===
 function initFilters() {
-  document.querySelectorAll('.filter-chip').forEach(chip => {
+  document.querySelectorAll('.filter-chip[data-type]').forEach(chip => {
     chip.addEventListener('click', () => {
       const type = chip.dataset.type;
       const waarde = chip.dataset.waarde;
       actieveFilters[type] = waarde;
-      // Zet active op juiste rij
       const rij = chip.closest('.filter-rij');
       rij.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('actief'));
       chip.classList.add('actief');
@@ -731,6 +738,39 @@ function initMeld() {
 }
 
 
+// === SUPERMARKT POPUP ===
+const ALLE_SUPERMARKTEN = ['Albert Heijn','Lidl','Jumbo','Aldi','Plus','Dirk','Dekamarkt','Vomar','Spar','Anders'];
+let geselecteerdeSupermarkt = 'alle';
+
+function openSupermarktPopup() {
+  vulSupermarktPopupLijst();
+  document.getElementById('supermarktPopup').style.display = 'flex';
+}
+
+function sluitSupermarktPopup(e) {
+  if (e && e.target !== document.getElementById('supermarktPopup')) return;
+  document.getElementById('supermarktPopup').style.display = 'none';
+}
+
+function vulSupermarktPopupLijst() {
+  const lijst = document.getElementById('supermarktPopupLijst');
+  let html = `<div class="buurt-popup-item ${geselecteerdeSupermarkt==='alle'?'actief':''}" onclick="kiesSupermarkt('alle')">🛒 Alle supermarkten</div>`;
+  ALLE_SUPERMARKTEN.forEach(s => {
+    html += `<div class="buurt-popup-item ${geselecteerdeSupermarkt===s?'actief':''}" onclick="kiesSupermarkt('${s}')">${s}</div>`;
+  });
+  lijst.innerHTML = html;
+}
+
+function kiesSupermarkt(naam) {
+  geselecteerdeSupermarkt = naam;
+  actieveFilters.supermarkt = naam;
+  const chip = document.getElementById('supermarktFilterChip');
+  chip.textContent = naam === 'alle' ? '🛒 Alle supermarkten' : '🛒 ' + naam;
+  chip.classList.add('actief');
+  document.getElementById('supermarktPopup').style.display = 'none';
+  toonGefilterd();
+}
+
 // === BUURT POPUP ===
 let alleBuurtenPopup = [];
 let geselecteerdeBuurt = 'alle';
@@ -880,7 +920,7 @@ function showToast(msg,isError=false){
     toastTimer=null;
   },3000);
 }
-function getBadgeClass(s){const m={'Albert Heijn':'ah','Lidl':'lidl','Jumbo':'jumbo','Aldi':'aldi','Plus':'plus','Dirk':'dirk'};return 'supermarkt-badge badge-'+(m[s]||'other');}
+function getBadgeClass(s){const m={'Albert Heijn':'ah','Lidl':'lidl','Jumbo':'jumbo','Aldi':'aldi','Plus':'plus','Dirk':'dirk','Dekamarkt':'dekamarkt','Vomar':'vomar','Spar':'spar'};return 'supermarkt-badge badge-'+(m[s]||'other');}
 function kortingsPerc(n,d){if(!n||n<=0)return 0;return Math.round((1-d/n)*100);}
 function timeAgo(ts){const d=(Date.now()-new Date(ts))/1000;if(d<60)return 'zojuist';if(d<3600)return Math.floor(d/60)+' min';if(d<86400)return Math.floor(d/3600)+' uur';return Math.floor(d/86400)+' dag geleden';}
 function verlooptIn(ts){const d=(new Date(ts)-Date.now())/1000;if(d<3600)return 'verloopt binnenkort';if(d<86400)return 'verloopt vanavond';const dagen=Math.ceil(d/86400);return `nog ${dagen} dag${dagen!==1?'en':''}`;}
