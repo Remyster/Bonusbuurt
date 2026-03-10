@@ -178,7 +178,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .buurt-popup-item.actief{color:var(--green);font-weight:700;}
 .buurt-popup-leeg{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
 
-.feedback-fab{position:fixed;bottom:24px;right:16px;width:52px;height:52px;background:var(--green);border-radius:50%;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(74,222,128,.4);z-index:98;}
+.feedback-fab{position:fixed;bottom:24px;right:80px;width:44px;height:44px;background:var(--card2);border:1px solid var(--border);border-radius:50%;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.3);z-index:98;transition:transform .2s;}
+.feedback-fab:active{transform:scale(.92);}
+.post-fab{position:fixed;bottom:20px;right:16px;width:56px;height:56px;background:var(--green);border-radius:50%;border:none;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(74,222,128,.5);z-index:98;transition:transform .2s;}
+.post-fab:active{transform:scale(.92);}
+
+/* REFRESH PILL */
+.refresh-pill{position:fixed;top:110px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--green);color:#000;font-size:13px;font-weight:700;padding:8px 16px;border-radius:20px;cursor:pointer;z-index:97;transition:transform .35s ease;white-space:nowrap;box-shadow:0 4px 16px rgba(74,222,128,.4);}
+.refresh-pill.show{transform:translateX(-50%) translateY(0);}
+
+/* VOTE ANIMATIE */
+@keyframes votePop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.vote-pop{animation:votePop .3s ease;}
+
 
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -228,7 +240,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="header">
   <div class="logo" id="logoBtn">Bonus<span>Buurt</span></div>
   <div style="display:flex;align-items:center;gap:8px;">
-    <span class="versie-badge">v10</span>
+    <span class="versie-badge">v11</span>
     <div class="live-pill"><div class="live-dot"></div><span id="dealCount">0</span> deals</div>
   </div>
 </div>
@@ -424,8 +436,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   </div>
 </div>
 
-<!-- FEEDBACK FAB -->
-<button class="feedback-fab" id="feedbackFab" style="display:none">💬</button>
+<!-- REFRESH PILL -->
+<div class="refresh-pill" id="refreshPill" onclick="refreshFeed()" style="display:none"></div>
+
+<!-- FEEDBACK + POST FAB -->
+<button class="feedback-fab" id="feedbackFab" style="display:none" title="Feedback geven">💡</button>
+<button class="post-fab" id="postFab" style="display:none" onclick="showTab('post')" title="Deal posten">＋</button>
 
 <!-- MELD MODAL -->
 <div class="modal-overlay" id="meldModal" style="display:none">
@@ -781,8 +797,8 @@ function showTab(tab) {
   });
   const s=document.getElementById('sectie-'+tab);
   if(s) s.style.display=tab==='feed'?'flex':'block';
-  if(tab==='feed') { s.style.flexDirection='column'; document.getElementById('filterBar').style.display='flex'; document.getElementById('feedbackFab').style.display='flex'; }
-  else { document.getElementById('filterBar').style.display='none'; document.getElementById('feedbackFab').style.display='none'; }
+  if(tab==='feed') { s.style.flexDirection='column'; document.getElementById('filterBar').style.display='flex'; document.getElementById('feedbackFab').style.display='flex'; document.getElementById('postFab').style.display='flex'; }
+  else { document.getElementById('filterBar').style.display='none'; document.getElementById('feedbackFab').style.display='none'; document.getElementById('postFab').style.display='none'; document.getElementById('refreshPill').style.display='none'; }
   if(tab==='feed') loadDeals();
   if(tab==='post') { loadProfile(); laadAlleBuurten(); }
   if(tab==='leaderboard') loadLeaderboard();
@@ -916,8 +932,10 @@ async function loadDeals(){
   document.getElementById('dealCount').textContent=data.length;
   document.getElementById('filterBar').style.display='flex';
   document.getElementById('feedbackFab').style.display='flex';
-  if(!data.length){feed.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Nog geen deals! Wees de eerste.</div></div>';return;}
+  document.getElementById('postFab').style.display='flex';
+  if(!data.length){feed.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text" style="margin-bottom:16px">Nog geen deals! Wees de eerste.</div><button onclick="showTab(\'post\')" style="background:var(--green);color:#000;font-family:\'Syne\',sans-serif;font-size:15px;font-weight:800;padding:14px 28px;border-radius:12px;border:none;cursor:pointer;">＋ Post de eerste deal!</button></div>';return;}
   feed.innerHTML=data.map(renderDeal).join('');
+  lastDealCount = data.length;
 
 }
 
@@ -928,6 +946,8 @@ async function voteDeal(id,btn){
   await sb.from('deals').update({votes:nv}).eq('id',id);
   votedDeals.push(id);localStorage.setItem('votedDeals',JSON.stringify(votedDeals));
   btn.innerHTML=`🙌 ${nv} Echt waar ✓`;btn.classList.add('voted');btn.disabled=true;
+  btn.classList.add('vote-pop');
+  setTimeout(()=>btn.classList.remove('vote-pop'),400);
   if(nv>=10){const c=document.getElementById('deal-'+id);if(c&&!c.querySelector('.heet-badge'))c.querySelector('.card-body').insertAdjacentHTML('beforeend','<span class="heet-badge">🔥 HEET</span>');}
   showToast('✅ Stem telt mee!');
 }
@@ -1021,6 +1041,39 @@ async function maakBuurt(){
   alleBuurten.push(naam);buurtFilterGeladen=false;
   loadBuurtenTab();
 }
+
+// === REFRESH PILL ===
+let refreshPillTimer = null;
+let lastDealCount = 0;
+
+function refreshFeed() {
+  const pill = document.getElementById('refreshPill');
+  pill.classList.remove('show');
+  setTimeout(() => pill.style.display='none', 350);
+  loadDeals();
+}
+
+async function checkNieuweDeals() {
+  const now = new Date().toISOString();
+  const { data } = await sb.from('deals').select('id').or(`verloopt_op.is.null,verloopt_op.gt.${now}`);
+  if (!data) return;
+  const nieuw = data.length - lastDealCount;
+  if (lastDealCount > 0 && nieuw > 0) {
+    const pill = document.getElementById('refreshPill');
+    if (pill) {
+      pill.textContent = `↑ ${nieuw} nieuwe deal${nieuw !== 1 ? 's' : ''} — tik om te laden`;
+      pill.style.display = 'block';
+      setTimeout(() => pill.classList.add('show'), 10);
+    }
+  }
+  lastDealCount = data.length;
+}
+
+// Poll elke 45 seconden
+setInterval(() => {
+  const feedActief = document.getElementById('sectie-feed').style.display !== 'none';
+  if (feedActief) checkNieuweDeals();
+}, 45000);
 
 // === SHARE ===
 let shareDealData = {};
