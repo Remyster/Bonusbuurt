@@ -236,6 +236,26 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* VERSIE BADGE */
 .versie-badge{font-size:10px;color:var(--muted);opacity:.5;padding:2px 6px;border-radius:4px;border:1px solid var(--border);}
 
+/* INFO KNOP */
+.info-btn{width:28px;height:28px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.info-btn:hover{border-color:var(--green);color:var(--green);}
+
+/* DEAL TYPE KIEZER */
+.deal-type-kiezer{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+.deal-type-btn{padding:10px 6px;border-radius:10px;background:var(--card2);border:2px solid var(--border);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;}
+.deal-type-btn.selected{background:#1a2e1a;border-color:var(--green);color:var(--green);}
+
+/* INFO MODAL */
+.info-modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:380px;max-height:85vh;overflow-y:auto;}
+.info-modal h3{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+.info-modal .tagline{color:var(--green);font-size:14px;font-weight:600;margin-bottom:20px;}
+.info-stap{display:flex;gap:12px;margin-bottom:16px;align-items:flex-start;}
+.info-stap-icon{width:36px;height:36px;border-radius:10px;background:#1a2e1a;border:1px solid #2d5a2d;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.info-stap-tekst strong{display:block;font-size:14px;font-weight:700;margin-bottom:2px;}
+.info-stap-tekst span{font-size:13px;color:var(--muted);line-height:1.4;}
+.info-divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+
 </style>
 </head>
 <body>
@@ -243,7 +263,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <div class="header">
   <div class="logo" id="logoBtn">Bonus<span>Buurt</span></div>
   <div style="display:flex;align-items:center;gap:8px;">
-    <span class="versie-badge">v12</span>
+    <button class="info-btn" onclick="openInfo()">?</button>
+    <span class="versie-badge">v13</span>
     <div class="live-pill"><div class="live-dot"></div><span id="dealCount">0</span> deals</div>
   </div>
 </div>
@@ -349,12 +370,30 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       </div>
     </div>
     <div class="form-row">
-      <label class="form-label">Prijs</label>
-      <div class="prijs-rij">
-        <input class="form-input" id="f-deal" type="number" step="0.01" placeholder="Deal prijs €">
-        <input class="form-input" id="f-normaal" type="number" step="0.01" placeholder="Was € (optioneel)">
+      <label class="form-label">Type aanbieding</label>
+      <div class="deal-type-kiezer">
+        <div class="deal-type-btn selected" data-type="prijs">💰 Vaste prijs</div>
+        <div class="deal-type-btn" data-type="procent">% Korting</div>
+        <div class="deal-type-btn" data-type="tekst">📝 Anders</div>
       </div>
-      <div class="prijs-hint">Alleen deal prijs is verplicht</div>
+      <!-- Vaste prijs -->
+      <div id="input-prijs">
+        <div class="prijs-rij">
+          <input class="form-input" id="f-deal" type="number" step="0.01" placeholder="Deal prijs €">
+          <input class="form-input" id="f-normaal" type="number" step="0.01" placeholder="Was € (optioneel)">
+        </div>
+        <div class="prijs-hint">Alleen deal prijs is verplicht</div>
+      </div>
+      <!-- Percentage -->
+      <div id="input-procent" style="display:none">
+        <input class="form-input" id="f-procent" type="number" step="1" min="1" max="100" placeholder="bijv. 15  (voor 15% korting)">
+        <div class="prijs-hint">bijv. "Alle vlees 15% korting"</div>
+      </div>
+      <!-- Vrije tekst -->
+      <div id="input-tekst" style="display:none">
+        <input class="form-input" id="f-deal-tekst" placeholder="bijv. 2e gratis, 3 halen 2 betalen...">
+        <div class="prijs-hint">Korte omschrijving van de aanbieding</div>
+      </div>
     </div>
     <div class="form-row">
       <label class="form-label">Deal geldig tot</label>
@@ -439,6 +478,48 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 <!-- FEEDBACK + POST FAB -->
 <button class="feedback-fab" id="feedbackFab" style="display:none" title="Feedback geven">💡</button>
 <button class="post-fab" id="postFab" style="display:none" onclick="showTab('post')" title="Deal posten">＋</button>
+
+<!-- INFO MODAL -->
+<div class="modal-overlay" id="infoModal" style="display:none">
+  <div class="info-modal">
+    <h3>🛒 Wat is BonusBuurt?</h3>
+    <div class="tagline">Supermarktdeals delen met je buurt — gratis, geen app nodig.</div>
+    <div class="info-stap">
+      <div class="info-stap-icon">👀</div>
+      <div class="info-stap-tekst">
+        <strong>Bekijk deals</strong>
+        <span>Zie wat buurtgenoten hebben gevonden bij AH, Lidl, Jumbo en meer.</span>
+      </div>
+    </div>
+    <div class="info-stap">
+      <div class="info-stap-icon">📸</div>
+      <div class="info-stap-tekst">
+        <strong>Post een deal</strong>
+        <span>Zie jij een goede aanbieding? Druk op ＋ en deel hem. Met foto, prijs of korting.</span>
+      </div>
+    </div>
+    <div class="info-stap">
+      <div class="info-stap-icon">🙌</div>
+      <div class="info-stap-tekst">
+        <strong>Stem "Echt waar"</strong>
+        <span>Klopt de deal? Druk op de stem knop. Bij 10+ stemmen wordt het 🔥 HEET.</span>
+      </div>
+    </div>
+    <div class="info-stap">
+      <div class="info-stap-icon">📤</div>
+      <div class="info-stap-tekst">
+        <strong>Deel via WhatsApp</strong>
+        <span>Stuur een deal door naar vrienden of in je buurtgroep.</span>
+      </div>
+    </div>
+    <hr class="info-divider">
+    <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;">
+      Deals verdwijnen automatisch na de einddatum.<br>
+      Geen account nodig — gewoon je naam invullen en posten.
+    </div>
+    <button class="submit-btn" style="margin-top:16px" onclick="document.getElementById('infoModal').style.display='none'">✅ Begrepen!</button>
+  </div>
+</div>
 
 <!-- MELD MODAL -->
 <div class="modal-overlay" id="meldModal" style="display:none">
@@ -550,6 +631,27 @@ let alleBuurten = [];
 let isAdmin = localStorage.getItem('bb_admin')==='true';
 let logoKliks = 0;
 
+// === DEAL TYPE KIEZER ===
+let selectedDealType = 'prijs';
+
+function initDealType() {
+  document.querySelectorAll('.deal-type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.deal-type-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedDealType = btn.dataset.type;
+      document.getElementById('input-prijs').style.display = selectedDealType === 'prijs' ? 'block' : 'none';
+      document.getElementById('input-procent').style.display = selectedDealType === 'procent' ? 'block' : 'none';
+      document.getElementById('input-tekst').style.display = selectedDealType === 'tekst' ? 'block' : 'none';
+    });
+  });
+}
+
+// === INFO MODAL ===
+function openInfo() {
+  document.getElementById('infoModal').style.display = 'flex';
+}
+
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
   initFilters();
@@ -559,6 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFeedback();
   initMeld();
   initLogo();
+  initDealType();
   loadDeals();
 });
 
@@ -928,6 +1031,11 @@ function verlooptIn(ts){const d=(new Date(ts)-Date.now())/1000;if(d<3600)return 
 // === DEALS ===
 function renderDeal(deal){
   const disc=kortingsPerc(deal.normaal_prijs,deal.deal_prijs);
+  const prijsHtml = deal.deal_label
+    ? `<span class="deal-price" style="font-size:20px">${deal.deal_label}</span>`
+    : `<span class="deal-price">€${Number(deal.deal_prijs).toFixed(2)}</span>
+       ${deal.normaal_prijs?`<span class="old-price">€${Number(deal.normaal_prijs).toFixed(2)}</span>`:''}
+       ${disc>0?`<span class="discount-badge">-${disc}%</span>`:''}`;
   const voted=votedDeals.includes(deal.id);
   const gemeld=gemeldDeals.includes(deal.id);
   const isHeet=deal.votes>=10;
@@ -946,11 +1054,7 @@ function renderDeal(deal){
     </div>
     <div class="card-body">
       <div class="deal-product">${deal.product}</div>
-      <div class="price-row">
-        <span class="deal-price">€${Number(deal.deal_prijs).toFixed(2)}</span>
-        ${deal.normaal_prijs?`<span class="old-price">€${Number(deal.normaal_prijs).toFixed(2)}</span>`:''}
-        ${disc>0?`<span class="discount-badge">-${disc}%</span>`:''}
-      </div>
+      <div class="price-row">${prijsHtml}</div>
       ${deal.beschrijving?`<div class="deal-desc">${deal.beschrijving}</div>`:''}
       <div>${isHeet?`<span class="heet-badge">🔥 HEET</span>`:''} ${vTxt?`<span class="verloopt-badge">⏰ ${vTxt}</span>`:''}</div>
     </div>
@@ -1005,20 +1109,36 @@ async function postDeal(){
   if(!naam){showToast('❌ Stel eerst je naam in!',true);return;}
   const buurt=document.getElementById('f-buurt').value.trim();
   const product=document.getElementById('f-product').value.trim();
-  const deal=parseFloat(document.getElementById('f-deal').value);
-  const normaal=parseFloat(document.getElementById('f-normaal').value);
   const desc=document.getElementById('f-desc').value.trim();
   const supermarkt=document.getElementById('f-supermarkt').value;
   if(!buurt){showToast('❌ Vul een buurt in!',true);return;}
-  if(!product||!deal){showToast('❌ Vul product en prijs in!',true);return;}
-  if(normaal&&deal>=normaal){showToast('❌ Deal prijs moet lager zijn!',true);return;}
+  if(!product){showToast('❌ Vul een product in!',true);return;}
+
+  let dealPrijs=null, normaalPrijs=null, dealLabel=null;
+
+  if(selectedDealType==='prijs'){
+    dealPrijs=parseFloat(document.getElementById('f-deal').value);
+    normaalPrijs=parseFloat(document.getElementById('f-normaal').value);
+    if(!dealPrijs){showToast('❌ Vul een prijs in!',true);return;}
+    if(normaalPrijs&&dealPrijs>=normaalPrijs){showToast('❌ Deal prijs moet lager zijn!',true);return;}
+  } else if(selectedDealType==='procent'){
+    const pct=parseInt(document.getElementById('f-procent').value);
+    if(!pct||pct<1||pct>99){showToast('❌ Vul een geldig percentage in!',true);return;}
+    dealLabel=pct+'% korting';
+  } else {
+    dealLabel=document.getElementById('f-deal-tekst').value.trim();
+    if(!dealLabel){showToast('❌ Vul de aanbieding in!',true);return;}
+  }
+
   const btn=document.getElementById('submitBtn');
   btn.disabled=true;btn.textContent='Bezig...';
   let fotoUrl=null;
   if(selectedFotoFile)fotoUrl=await uploadFoto(selectedFotoFile);
   const{error}=await sb.from('deals').insert({
     gebruiker_naam:naam,supermarkt,stad:buurt,product,
-    normaal_prijs:normaal||null,deal_prijs:deal,
+    normaal_prijs:normaalPrijs||null,
+    deal_prijs:dealPrijs||null,
+    deal_label:dealLabel||null,
     beschrijving:desc||null,emoji:selectedEmoji,
     votes:0,foto_url:fotoUrl,
     verloopt_op:getVerloopDate().toISOString()
@@ -1030,6 +1150,8 @@ async function postDeal(){
     document.getElementById('f-product').value='';
     document.getElementById('f-deal').value='';
     document.getElementById('f-normaal').value='';
+    document.getElementById('f-procent').value='';
+    document.getElementById('f-deal-tekst').value='';
     document.getElementById('f-desc').value='';
     removeFoto();
     setTimeout(()=>showTab('feed'),800);
