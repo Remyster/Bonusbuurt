@@ -16,9 +16,7 @@
   --text: #e8eaf0;
   --muted: rgba(255,255,255,0.35);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   background: var(--bg);
   font-family: 'DM Mono', monospace;
@@ -27,339 +25,271 @@ body {
   padding: 40px 24px 60px;
   overflow-x: hidden;
 }
-
 body::before {
   content: '';
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background-image:
     linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
   background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
-
 body::after {
   content: '';
   position: fixed;
-  top: -20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 900px;
-  height: 600px;
+  top: -20%; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 600px;
   background: radial-gradient(ellipse, rgba(102,126,234,0.07) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
+.wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
 
-.wrapper {
-  position: relative;
-  z-index: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* ── POPUP OVERLAY ── */
+/* ── POPUP ── */
 #popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(6px);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(7px);
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   padding: 20px;
-  animation: fadeIn 0.4s ease both;
+  animation: fadeIn 0.35s ease both;
 }
-
 #popup {
-  background: #0f1118;
+  background: #0d0e18;
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 36px 32px 28px;
-  max-width: 540px;
-  width: 100%;
+  max-width: 560px; width: 100%;
   position: relative;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.65);
   animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
 }
-
 .popup-date {
   font-size: 0.65em;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 28px;
-}
-
-.popup-block {
   margin-bottom: 24px;
-  padding: 20px;
-  border-radius: 12px;
-  border-left: 3px solid var(--block-color);
-  background: rgba(255,255,255,0.03);
 }
-
+.popup-block {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  border-left: 3px solid var(--bc);
+  background: rgba(255,255,255,0.03);
+  min-height: 80px;
+}
 .popup-block-label {
   font-size: 0.62em;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--block-color);
+  color: var(--bc);
   margin-bottom: 10px;
 }
-
 .popup-block-text {
-  font-size: 0.9em;
-  line-height: 1.65;
+  font-size: 0.88em;
+  line-height: 1.68;
   color: var(--text);
 }
+.popup-block.quote    { --bc: #cc785c; }
+.popup-block.lifehack { --bc: #667eea; }
+.popup-block.fact     { --bc: #10b981; }
 
-.popup-block.quote   { --block-color: #cc785c; }
-.popup-block.lifehack{ --block-color: #667eea; }
-.popup-block.fact    { --block-color: #10b981; }
+/* Loading shimmer */
+.loading-shimmer {
+  height: 14px; border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 8px;
+}
+.loading-shimmer:last-child { width: 70%; margin-bottom: 0; }
+@keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+/* AI badge */
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.6em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #10b981;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.18);
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-bottom: 20px;
+}
+.ai-dot { width:6px; height:6px; border-radius:50%; background:#10b981; animation: glow-pulse 2s infinite; }
 
 .popup-close {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 13px;
+  display: block; width: 100%;
+  margin-top: 10px; padding: 13px;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 10px;
   color: var(--text);
   font-family: 'DM Mono', monospace;
-  font-size: 0.82em;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-align: center;
+  font-size: 0.82em; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s; text-align: center;
 }
+.popup-close:hover { background: rgba(255,255,255,0.11); }
 
-.popup-close:hover { background: rgba(255,255,255,0.1); }
+/* ── API KEY MODAL ── */
+#apikey-modal {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#apikey-modal.show { display: flex; }
+#apikey-box {
+  background: #0d0e18;
+  border: 1px solid rgba(255,165,0,0.3);
+  border-radius: 20px;
+  padding: 36px 30px;
+  max-width: 500px; width: 100%;
+  box-shadow: 0 0 60px rgba(255,165,0,0.08);
+}
+#apikey-box h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2em; margin-bottom: 8px;
+  color: #fbbf24;
+}
+#apikey-box p { font-size: 0.8em; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+#apikey-box a { color: #667eea; }
+#apikey-input {
+  width: 100%; padding: 12px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,165,0,0.25);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85em; outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+#apikey-input:focus { border-color: rgba(255,165,0,0.5); }
+#apikey-input::placeholder { color: var(--muted); }
+.apikey-btns { display: flex; gap: 10px; }
+.btn-save {
+  flex: 1; padding: 12px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none; border-radius: 10px;
+  color: #fff; font-family: 'DM Mono', monospace;
+  font-size: 0.82em; cursor: pointer; transition: opacity 0.2s;
+}
+.btn-save:hover { opacity: 0.85; }
+.btn-skip {
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted); font-family: 'DM Mono', monospace;
+  font-size: 0.82em; cursor: pointer; transition: background 0.2s;
+}
+.btn-skip:hover { background: rgba(255,255,255,0.09); }
+.warning-box {
+  background: rgba(255,165,0,0.06);
+  border: 1px solid rgba(255,165,0,0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.75em;
+  color: #fbbf24;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
 
 /* ── HEADER ── */
-header {
-  text-align: center;
-  margin-bottom: 40px;
-  animation: fadeDown 0.6s ease both;
-}
-
+header { text-align: center; margin-bottom: 40px; animation: fadeDown 0.6s ease both; }
 header h1 {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(2em, 6vw, 3em);
-  font-weight: 800;
+  font-size: clamp(2em, 6vw, 3em); font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #e8eaf0 30%, #667eea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-
-header p {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.8em;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* Daily badge in header */
+header p { margin-top: 8px; color: var(--muted); font-size: 0.8em; letter-spacing: 0.12em; text-transform: uppercase; }
+.header-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
 .daily-badge {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 5px 14px;
-  background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.2);
-  border-radius: 20px;
-  font-size: 0.7em;
-  color: #10b981;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background 0.2s;
+  display: inline-block; padding: 5px 14px;
+  background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 20px; font-size: 0.7em; color: #10b981;
+  letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s;
 }
 .daily-badge:hover { background: rgba(16,185,129,0.18); }
+.settings-badge {
+  display: inline-block; padding: 5px 14px;
+  background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.18);
+  border-radius: 20px; font-size: 0.7em; color: #fbbf24;
+  letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s;
+}
+.settings-badge:hover { background: rgba(251,191,36,0.15); }
 
 /* ── SEARCH ── */
 .search-wrap {
-  position: relative;
-  margin-bottom: 40px;
-  animation: fadeDown 0.6s 0.1s ease both;
-  opacity: 0;
-  animation-fill-mode: both;
+  position: relative; margin-bottom: 40px;
+  animation: fadeDown 0.6s 0.1s ease both; opacity: 0; animation-fill-mode: both;
 }
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-52%);
-  color: var(--muted);
-  font-size: 1.2em;
-  pointer-events: none;
-  font-family: sans-serif;
-}
-
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-52%); color: var(--muted); font-size: 1.2em; pointer-events: none; font-family: sans-serif; }
 #search {
-  width: 100%;
-  padding: 14px 20px 14px 46px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.9em;
-  outline: none;
+  width: 100%; padding: 14px 20px 14px 46px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text);
+  font-family: 'DM Mono', monospace; font-size: 0.9em; outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-
 #search::placeholder { color: var(--muted); }
-#search:focus {
-  border-color: rgba(102,126,234,0.45);
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.08);
-}
+#search:focus { border-color: rgba(102,126,234,0.45); box-shadow: 0 0 0 3px rgba(102,126,234,0.08); }
 
 /* ── SECTIONS ── */
-.section {
-  margin-bottom: 40px;
-  animation: fadeUp 0.5s ease both;
-  opacity: 0;
-  animation-fill-mode: both;
-}
-
+.section { margin-bottom: 40px; animation: fadeUp 0.5s ease both; opacity: 0; animation-fill-mode: both; }
 .section:nth-of-type(1) { animation-delay: 0.18s; }
 .section:nth-of-type(2) { animation-delay: 0.28s; }
 .section:nth-of-type(3) { animation-delay: 0.38s; }
-
 .section-label {
-  font-size: 0.7em;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
-  padding-left: 2px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  font-size: 0.7em; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; padding-left: 2px;
+  display: flex; align-items: center; gap: 12px;
 }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* ── GRID ── */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 12px;
-}
-
-/* ── CARDS ── */
+/* ── GRID & CARDS ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
 .card {
-  display: block;
-  padding: 22px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  text-decoration: none;
-  color: var(--text);
-  position: relative;
-  overflow: hidden;
+  display: block; padding: 22px 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; text-decoration: none; color: var(--text);
+  position: relative; overflow: hidden;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
-
 .card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+  content: ''; position: absolute; inset: 0; opacity: 0;
   transition: opacity 0.3s;
   background: radial-gradient(circle at 20% 50%, var(--glow) 0%, transparent 60%);
 }
-
 @media (hover: hover) {
   .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.13); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
   .card:hover::before { opacity: 0.09; }
   .card:hover .kbd { opacity: 1; }
 }
-
-.dot {
-  position: absolute;
-  top: 18px; right: 18px;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--glow);
-  box-shadow: 0 0 7px var(--glow);
-  opacity: 0.5;
-}
-
-.kbd {
-  position: absolute;
-  bottom: 14px; right: 14px;
-  font-size: 0.62em;
-  color: var(--muted);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 2px 7px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.recent-tag {
-  display: none;
-  font-size: 0.58em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--glow);
-  opacity: 0.75;
-  margin-bottom: 10px;
-}
-
+.dot { position: absolute; top: 18px; right: 18px; width: 7px; height: 7px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 7px var(--glow); opacity: 0.5; }
+.kbd { position: absolute; bottom: 14px; right: 14px; font-size: 0.62em; color: var(--muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px; opacity: 0; transition: opacity 0.2s; }
+.recent-tag { display: none; font-size: 0.58em; letter-spacing: 0.1em; text-transform: uppercase; color: var(--glow); opacity: 0.75; margin-bottom: 10px; }
 .card.recent .recent-tag { display: block; }
 .card.recent .dot { opacity: 1; animation: glow-pulse 2s infinite; }
-
-@keyframes glow-pulse {
-  0%,100% { box-shadow: 0 0 6px var(--glow); }
-  50%      { box-shadow: 0 0 16px var(--glow); }
-}
-
-.card h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.1em;
-  font-weight: 600;
-  margin-bottom: 5px;
-  letter-spacing: -0.01em;
-}
-
+@keyframes glow-pulse { 0%,100% { box-shadow: 0 0 6px var(--glow); } 50% { box-shadow: 0 0 16px var(--glow); } }
+.card h2 { font-family: 'Syne', sans-serif; font-size: 1.1em; font-weight: 600; margin-bottom: 5px; letter-spacing: -0.01em; }
 .card p { font-size: 0.78em; color: var(--muted); }
-
 .agent   { --glow: #cc785c; }
 .general { --glow: #667eea; }
 .tool    { --glow: #10b981; }
-
 .card.hidden { display: none; }
 .section.empty { display: none; }
-
-#no-results {
-  display: none;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85em;
-  padding: 50px 20px;
-}
-
-.hint {
-  text-align: center;
-  color: rgba(255,255,255,0.18);
-  font-size: 0.7em;
-  letter-spacing: 0.1em;
-  margin-top: 16px;
-}
+#no-results { display: none; text-align: center; color: var(--muted); font-size: 0.85em; padding: 50px 20px; }
+.hint { text-align: center; color: rgba(255,255,255,0.18); font-size: 0.7em; letter-spacing: 0.1em; margin-top: 16px; }
 
 @media (max-width: 600px) {
   body { padding: 24px 14px 40px; }
@@ -368,7 +298,7 @@ header p {
   #popup { padding: 24px 18px 20px; }
 }
 
-@keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes fadeIn   { from { opacity:0 } to { opacity:1 } }
 @keyframes fadeDown { from { opacity:0; transform:translateY(-14px) } to { opacity:1; transform:translateY(0) } }
 @keyframes fadeUp   { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
 @keyframes popIn    { from { opacity:0; transform:scale(0.88) } to { opacity:1; transform:scale(1) } }
@@ -376,24 +306,53 @@ header p {
 </head>
 <body>
 
+<!-- ── API KEY MODAL ── -->
+<div id="apikey-modal">
+  <div id="apikey-box">
+    <h3>🔑 Gemini API Key instellen</h3>
+    <div class="warning-box">
+      ⚠️ REMY — DIT IS NIET JE GOOGLE WACHTWOORD.<br>
+      Dit is een aparte API sleutel van Google AI Studio.<br>
+      Hoe krijg je hem? → <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a><br>
+      Klik "Create API Key" → kopieer → plak hieronder.
+    </div>
+    <p>De key wordt lokaal opgeslagen in je browser. Hij verlaat nooit je apparaat behalve naar Google's API.</p>
+    <input type="password" id="apikey-input" placeholder="AIzaSy...">
+    <div class="apikey-btns">
+      <button class="btn-save" onclick="saveApiKey()">✓ Opslaan & activeren</button>
+      <button class="btn-skip" onclick="skipApiKey()">Overslaan (gebruik fallback)</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── DAILY POPUP ── -->
-<div id="popup-overlay">
+<div id="popup-overlay" style="display:none;">
   <div id="popup">
     <div class="popup-date" id="popup-date"></div>
+    <div class="ai-badge"><span class="ai-dot"></span> <span id="ai-source-label">AI gegenereerd</span></div>
 
     <div class="popup-block quote">
       <div class="popup-block-label">💬 Quote van de dag</div>
-      <div class="popup-block-text" id="popup-quote"></div>
+      <div class="popup-block-text" id="popup-quote">
+        <div class="loading-shimmer"></div>
+        <div class="loading-shimmer"></div>
+      </div>
     </div>
 
     <div class="popup-block lifehack">
       <div class="popup-block-label">⚡ Life Hack</div>
-      <div class="popup-block-text" id="popup-hack"></div>
+      <div class="popup-block-text" id="popup-hack">
+        <div class="loading-shimmer"></div>
+        <div class="loading-shimmer"></div>
+      </div>
     </div>
 
     <div class="popup-block fact">
       <div class="popup-block-label">🧠 Feit van de dag</div>
-      <div class="popup-block-text" id="popup-fact"></div>
+      <div class="popup-block-text" id="popup-fact">
+        <div class="loading-shimmer"></div>
+        <div class="loading-shimmer"></div>
+      </div>
     </div>
 
     <button class="popup-close" onclick="closePopup()">Let's go → Hub openen</button>
@@ -402,11 +361,13 @@ header p {
 
 <!-- ── MAIN HUB ── -->
 <div class="wrapper">
-
   <header>
     <h1>🧠 Remy AI Hub</h1>
     <p>Alle agents &amp; tools — tik &amp; ga</p>
-    <span class="daily-badge" onclick="openPopup()">📅 Dagelijkse tip opnieuw zien</span>
+    <div class="header-btns">
+      <span class="daily-badge" onclick="openPopup()">📅 Dagelijkse tip</span>
+      <span class="settings-badge" onclick="openApiKeyModal()">🔑 API Key wijzigen</span>
+    </div>
   </header>
 
   <div class="search-wrap">
@@ -414,354 +375,335 @@ header p {
     <input type="text" id="search" placeholder="Zoek agent of tool...   ( druk / )" autocomplete="off" spellcheck="false">
   </div>
 
-  <!-- MIJN AGENTS -->
   <section class="section" id="sec-agents">
     <div class="section-label">Mijn Agents</div>
     <div class="grid">
-
-      <a href="https://claude.ai/project/019c8aa5-f843-7141-b663-cb017a540215"
-         class="card agent" data-key="1" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🏥 Dr. NeuroCut</h2>
-        <p>Remy zijn medische specialist</p>
-        <span class="kbd">1</span>
+      <a href="https://claude.ai/project/019c8aa5-f843-7141-b663-cb017a540215" class="card agent" data-key="1" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🏥 Dr. NeuroCut</h2><p>Remy zijn medische specialist</p><span class="kbd">1</span>
       </a>
-
-      <a href="https://claude.ai/project/019c8aa0-42f8-7509-b6ae-a1b708cefa79"
-         class="card agent" data-key="2" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🔬 Nova R&amp;D</h2>
-        <p>Remy PWN companion</p>
-        <span class="kbd">2</span>
+      <a href="https://claude.ai/project/019c8aa0-42f8-7509-b6ae-a1b708cefa79" class="card agent" data-key="2" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🔬 Nova R&amp;D</h2><p>Remy PWN companion</p><span class="kbd">2</span>
       </a>
-
-      <a href="https://claude.ai/project/019c8aa7-933b-7514-b519-8362446b492b"
-         class="card agent" data-key="3" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>❤️ Jan Mars</h2>
-        <p>Relatie Therapeut</p>
-        <span class="kbd">3</span>
+      <a href="https://claude.ai/project/019c8aa7-933b-7514-b519-8362446b492b" class="card agent" data-key="3" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>❤️ Jan Mars</h2><p>Relatie Therapeut</p><span class="kbd">3</span>
       </a>
-
-      <a href="https://claude.ai/project/019c8a99-57fe-718e-98ba-20d52329ad36"
-         class="card agent" data-key="4" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>💪 Alex</h2>
-        <p>Personal coach</p>
-        <span class="kbd">4</span>
+      <a href="https://claude.ai/project/019c8a99-57fe-718e-98ba-20d52329ad36" class="card agent" data-key="4" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>💪 Alex</h2><p>Personal coach</p><span class="kbd">4</span>
       </a>
-
-      <a href="https://claude.ai/project/019c8aa4-2f69-74e6-8cd4-7628e5a481e6"
-         class="card agent" data-key="5" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>💻 Voltex Coder</h2>
-        <p>HA &amp; AI Coding</p>
-        <span class="kbd">5</span>
+      <a href="https://claude.ai/project/019c8aa4-2f69-74e6-8cd4-7628e5a481e6" class="card agent" data-key="5" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>💻 Voltex Coder</h2><p>HA &amp; AI Coding</p><span class="kbd">5</span>
       </a>
-
-      <a href="https://claude.ai/project/019bb342-d02a-77cd-afc8-d70b1e8a8b36"
-         class="card agent" data-key="6" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🏋️ Clyde</h2>
-        <p>Fitness buddy</p>
-        <span class="kbd">6</span>
+      <a href="https://claude.ai/project/019bb342-d02a-77cd-afc8-d70b1e8a8b36" class="card agent" data-key="6" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🏋️ Clyde</h2><p>Fitness buddy</p><span class="kbd">6</span>
       </a>
-
     </div>
   </section>
 
-  <!-- ALGEMEEN -->
   <section class="section" id="sec-general">
     <div class="section-label">Algemeen</div>
     <div class="grid">
-
-      <a href="https://claude.ai/new"
-         class="card general" data-key="7" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>✨ Claude</h2>
-        <p>Nieuw gesprek</p>
-        <span class="kbd">7</span>
+      <a href="https://claude.ai/new" class="card general" data-key="7" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>✨ Claude</h2><p>Nieuw gesprek</p><span class="kbd">7</span>
       </a>
-
-      <a href="https://www.perplexity.ai/"
-         class="card general" data-key="8" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>❓ Perplexity</h2>
-        <p>Snelle vragen</p>
-        <span class="kbd">8</span>
+      <a href="https://www.perplexity.ai/" class="card general" data-key="8" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>❓ Perplexity</h2><p>Snelle vragen</p><span class="kbd">8</span>
       </a>
-
-      <a href="https://chatgpt.com/"
-         class="card general" data-key="9" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>💬 ChatGPT</h2>
-        <p>OpenAI chats</p>
-        <span class="kbd">9</span>
+      <a href="https://chatgpt.com/" class="card general" data-key="9" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>💬 ChatGPT</h2><p>OpenAI chats</p><span class="kbd">9</span>
       </a>
-
-      <a href="https://grok.com/"
-         class="card general" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🚀 Grok</h2>
-        <p>xAI chats</p>
+      <a href="https://grok.com/" class="card general" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🚀 Grok</h2><p>xAI chats</p>
       </a>
-
     </div>
   </section>
 
-  <!-- TOOLS -->
   <section class="section" id="sec-tools">
     <div class="section-label">Tools &amp; Platforms</div>
     <div class="grid">
-
-      <a href="https://notebooklm.google.com/?pli=1"
-         class="card tool" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>📓 NotebookLM</h2>
-        <p>Google AI notities & research</p>
+      <a href="https://notebooklm.google.com/?pli=1" class="card tool" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>📓 NotebookLM</h2><p>Google AI notities &amp; research</p>
       </a>
-
-      <a href="https://ai.ha-remy.uk"
-         class="card tool" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>⚙️ OpenWebUI</h2>
-        <p>Rem en meer</p>
+      <a href="https://ai.ha-remy.uk" class="card tool" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>⚙️ OpenWebUI</h2><p>Rem en meer</p>
       </a>
-
-      <a href="https://gemini.google.com/u/0/app"
-         class="card tool" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🤖 Gemini Chat</h2>
-        <p>Normale vragen</p>
+      <a href="https://gemini.google.com/u/0/app" class="card tool" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🤖 Gemini Chat</h2><p>Normale vragen</p>
       </a>
-
-      <a href="https://aistudio.google.com/?project=gen-lang-client-0932412151"
-         class="card tool" target="_blank" rel="noopener noreferrer">
-        <span class="recent-tag">▲ recent</span>
-        <div class="dot"></div>
-        <h2>🎨 Google AI Studio</h2>
-        <p>Experimenteren met modellen</p>
+      <a href="https://aistudio.google.com/?project=gen-lang-client-0932412151" class="card tool" target="_blank" rel="noopener noreferrer">
+        <span class="recent-tag">▲ recent</span><div class="dot"></div>
+        <h2>🎨 Google AI Studio</h2><p>Experimenteren met modellen</p>
       </a>
-
     </div>
   </section>
 
   <div id="no-results">Geen resultaten voor "<span id="no-results-term"></span>"</div>
   <p class="hint">Toets 1–9 om direct te openen &nbsp;·&nbsp; / om te zoeken &nbsp;·&nbsp; Esc om te sluiten</p>
-
 </div>
 
 <script>
-// ── CONTENT ARRAYS ─────────────────────────────────────────────────────
-const QUOTES = [
-  "Je hoeft niet perfect te zijn om te beginnen, maar je moet beginnen om perfect te worden.",
-  "Discipline is kiezen tussen wat je nu wilt en wat je het meest wilt.",
-  "Kleine dagelijkse verbeteringen zijn de sleutel tot resultaten die iedereen versteld doen staan.",
-  "De enige slechte training is de training die je niet gedaan hebt.",
-  "Jij bepaalt hoe je dag eruit ziet — niemand anders.",
-  "Succes is de som van kleine inspanningen, elke dag herhaald.",
-  "Werk hard in stilte. Laat je succes het geluid maken.",
-  "Je bent sterker dan je denkt, slimmer dan je gelooft en capabeler dan je je realiseert.",
-  "Een jaar van nu af ben je blij dat je vandaag begonnen bent.",
-  "Motivatie brengt je op gang, gewoonte houdt je gaande.",
-  "Elke expert was ooit een beginner. Elke pro was ooit een amateur.",
-  "Je kunt jezelf niet in de toekomst denken — je moet jezelf er naartoe werken.",
-  "Uitdagingen zijn wat het leven interessant maken. Ze overwinnen is wat het leven betekenisvol maakt.",
-  "Doe vandaag wat anderen niet willen, zodat je morgen kunt leven zoals anderen niet kunnen.",
-  "Vertrouw het proces. Je bent niet geslaagd of mislukt — je bent onderweg.",
-  "De beste investering die je kunt doen is in jezelf.",
-  "Pijn is tijdelijk. Spijt duurt veel langer.",
-  "Word elke dag 1% beter. Na een jaar ben je 37x zo goed.",
-  "Je omgeving maakt je. Kies bewust met wie en wat je je omringt.",
-  "Dromen worden doelen als je er een datum aan hangt.",
-  "Stop met wachten op de perfecte moment. Neem dit moment en maak het perfect.",
-  "Consistentie verslaat altijd intensiteit op de lange termijn.",
-  "Je brein gelooft wat je het steeds opnieuw vertelt. Vertel het iets goeds.",
-  "Het verschil tussen wie je bent en wie je wilt zijn, is wat je doet.",
-  "Slaap niet om te rusten. Slaap om te groeien.",
-  "Focus op de stap voor je, niet de hele trap.",
-  "Jij bent de CEO van je eigen leven. Neem de leiding.",
-  "Elke ochtend heb je twee keuzes: sla de wekker uit of druk op start.",
-  "Resultaten komen niet van wat je af en toe doet, maar van wat je altijd doet.",
-  "De moeilijkste stap is altijd de eerste. Zet hem vandaag.",
-];
+// ══════════════════════════════════════════════════════════════
+// FALLBACK CONTENT (als API niet beschikbaar is)
+// ══════════════════════════════════════════════════════════════
+const FALLBACK = {
+  quotes: [
+    "Discipline is kiezen tussen wat je nu wilt en wat je het meest wilt.",
+    "Kleine dagelijkse verbeteringen zijn de sleutel tot resultaten die iedereen versteld doen staan.",
+    "Je bent sterker dan je denkt, slimmer dan je gelooft.",
+    "Succes is de som van kleine inspanningen, elke dag herhaald.",
+    "Werk hard in stilte. Laat je succes het geluid maken.",
+    "Motivatie brengt je op gang, gewoonte houdt je gaande.",
+    "Word elke dag 1% beter. Na een jaar ben je 37x zo goed.",
+    "De beste investering die je kunt doen is in jezelf.",
+    "Stop met wachten op het perfecte moment. Maak dit moment perfect.",
+    "Consistentie verslaat altijd intensiteit op de lange termijn.",
+  ],
+  hacks: [
+    "Zet je telefoon 's ochtends pas na 30 minuten aan. Begin de dag op jouw tempo.",
+    "De 2-minuten regel: als iets minder dan 2 minuten duurt, doe het dan direct.",
+    "Drink een groot glas water direct na het opstaan. Je lichaam is 8 uur uitgedroogd.",
+    "Plan je zwaarste taak als eerste in de ochtend — dan heb je al gewonnen voor de lunch.",
+    "Gebruik de Pomodoro techniek: 25 minuten focus, 5 minuten pauze.",
+    "Maak je bed elke ochtend. Het is je eerste overwinning van de dag.",
+    "Leg kleding voor morgen 's avonds klaar. Bespaar energie voor wat telt.",
+    "Gebruik dark mode altijd. Minder oogvermoeidheid, minder batterijverbruik.",
+    "Luister podcasts op 1.5x snelheid. Wennen in een dag.",
+    "Schrijf 's avonds 3 dingen op die je de volgende dag wilt doen.",
+  ],
+  facts: [
+    "Je brein verbruikt 20% van alle energie maar weegt slechts 2% van je lichaamsgewicht.",
+    "Honing bederft nooit. In Egyptische piramiden gevonden honing van 3000 jaar was nog eetbaar.",
+    "Cleopatra leefde dichter bij de iPhone dan bij de bouw van de piramides.",
+    "De Eiffelstoren wordt 's zomers 15 cm langer door warmte-uitzetting.",
+    "Nintendo werd opgericht in 1889 — als speelkaartenmaker.",
+    "Een octopus heeft drie harten, blauw bloed en negen hersenen.",
+    "Het menselijk lichaam heeft genoeg ijzer om een spijker van 3 cm te maken.",
+    "Er zijn meer mogelijke schaakspellen dan atomen in het zichtbare universum.",
+    "Mensen en bananen delen 60% van hun DNA.",
+    "Het duurt 8 minuten en 20 seconden voor licht van de zon om de aarde te bereiken.",
+  ]
+};
 
-const LIFEHACKS = [
-  "Zet je telefoon 's ochtends pas na 30 minuten aan. Begin de dag op jouw tempo, niet dat van anderen.",
-  "Schrijf 's avonds 3 dingen op die je de volgende dag wilt doen. Je brein verwerkt dit tijdens je slaap.",
-  "De 2-minuten regel: als iets minder dan 2 minuten duurt, doe het dan direct.",
-  "Drink een groot glas water direct na het opstaan. Je lichaam is 8 uur uitgedroogd geweest.",
-  "Gebruik de 5-4-3-2-1 methode als je niet kunt beginnen: tel af en start gewoon.",
-  "Zet notificaties uit tijdens focustijd. Elke onderbreking kost je gemiddeld 23 minuten herstelconcentratie.",
-  "Maak je bed elke ochtend. Het is je eerste overwinning van de dag en zet de toon.",
-  "Batch vergelijkbare taken samen. E-mail lezen op vaste momenten, niet de hele dag door.",
-  "Leg kleding voor morgen 's avonds klaar. Beslissingsmoeheid is echt — bespaar energie voor wat telt.",
-  "Loop bij een moeilijk probleem letterlijk een blokje om. Beweging reset je brein.",
-  "Gebruik je telefoon niet als wekker. Leg hem buiten de slaapkamer.",
-  "Plan je zwaarste taak als eerste in de ochtend — dan heb je al 'gewonnen' voor de lunch.",
-  "Stel een timer van 25 minuten voor gefocust werk, dan 5 minuten pauze. (Pomodoro techniek)",
-  "Gebruik Google Lens om snel iets op te zoeken zonder te typen.",
-  "Maak een 'done list' naast je to-do list. Zien wat je hebt bereikt motiveert meer dan wat nog moet.",
-  "Snoozen maakt je moeier, niet uitgeruster. Stel je wekker op één tijd en sta direct op.",
-  "Leer sneltoetsen van apps die je dagelijks gebruikt. Bespaart per jaar meerdere uren.",
-  "Verander je schermachtergrond naar je doel. Elke keer dat je je telefoon pakt, zie je het.",
-  "Eet een proteïnerijke lunch. Dit voorkomt de middag-dip die je productiviteit doodt.",
-  "Gebruik een wachtwoordmanager. Stop met hetzelfde wachtwoord hergebruiken.",
-  "Verlaat een vergadering als er geen agenda is. Geen agenda = geen doel = tijdverspilling.",
-  "Zet je social media apps op de tweede pagina van je telefoon. Minder zichtbaar = minder gebruik.",
-  "Reply op e-mails in de ochtend en middag, niet continu. Jij stuurt de dag, niet je inbox.",
-  "Download YouTube Premium of gebruik Sponsorblock. Stop tijd kwijt zijn aan advertenties.",
-  "Wil je iets leren? Leg het uit aan iemand anders. Als je het kunt uitleggen, snap je het echt.",
-  "Foto van je koelkast voor je boodschappen doet. Nooit meer iets dubbel kopen.",
-  "Gebruik dark mode altijd. Minder oogvermoeidheid, minder batterijverbruik.",
-  "Zet je meest afleide apps achter een schermtijdlimiet in je telefooninstellingen.",
-  "Luister podcasts en audioboeken op 1.5x snelheid. Wennen in een dag, daarna nooit meer terug.",
-  "Sla niks op in je hoofd wat je ook ergens anders kunt opslaan. Gebruik je brein om te denken, niet te onthouden.",
-];
-
-const FACTS = [
-  "Je brein verbruikt 20% van alle energie in je lichaam, maar weegt slechts 2% van je lichaamsgewicht.",
-  "Octopussen hebben drie harten, blauw bloed en negen hersenen (één centraal + één per arm).",
-  "Een dag op Venus duurt langer dan een jaar op Venus — het roteert zo traag.",
-  "Honey (honing) bederft nooit. In Egyptische piramiden gevonden honing van 3000 jaar oud was nog eetbaar.",
-  "Het menselijk oog kan ongeveer 10 miljoen verschillende kleuren onderscheiden.",
-  "Een gemiddeld mens ademt per dag zo'n 20.000 keer. Bijna altijd onbewust.",
-  "Mieren slapen nooit — ze maken korte rustperiodes van 1 minuut, zo'n 250 keer per dag.",
-  "Nintendo werd opgericht in 1889 — als speelkaartenmaker.",
-  "Het duurt 8 minuten en 20 seconden voor licht van de zon om de aarde te bereiken.",
-  "Bananen zijn radioactief door kalium-40, maar de hoeveelheid is compleet onschadelijk.",
-  "Cleopatra leefde dichter bij de uitvinding van de iPhone dan bij de bouw van de piramides.",
-  "Een wolk kan honderden miljoenen kilo's water bevatten en toch zweven.",
-  "Je neus kan meer dan 1 biljoen verschillende geuren onderscheiden.",
-  "Vingerafdrukken van koala's zijn zo vergelijkbaar met menselijke dat ze forensische experts al in verwarring hebben gebracht.",
-  "Het menselijk lichaam heeft genoeg ijzer om een spijker van 3 cm te maken.",
-  "In één seconde stuurt het internet meer data dan er in de jaren '90 per dag werd gestuurd.",
-  "De Eiffelstoren wordt 's zomers 15 cm langer door uitzetting door warmte.",
-  "Een groep flamingo's heet een 'flamboyance'. Terecht.",
-  "Haai-DNA is zo stabiel dat ze in 400 miljoen jaar nauwelijks geëvolueerd zijn.",
-  "Je lichaam maakt elke seconde 25 miljoen nieuwe cellen aan.",
-  "Er zijn meer mogelijke schaakspellen dan atomen in het zichtbare universum.",
-  "Krokodillen slikken stenen in om dieper te kunnen duiken — als ballast.",
-  "Het woord 'robot' komt uit het Tsjechisch: 'robota' betekent 'gedwongen arbeid'.",
-  "De Stille Oceaan is groter dan alle continenten bij elkaar opgeteld.",
-  "Mensen en bananen delen 60% van hun DNA.",
-  "In het Japans zijn er aparte woorden voor 'schattig maar klein' (kawaii) en 'schattig maar kwetsbaar' (itoshii).",
-  "De gemiddelde mens loopt in een leven genoeg om 5 keer de aarde rond te gaan.",
-  "Lichtjes die je ziet als je wrijft in je ogen heten 'fosfenen'. Ze bestaan niet echt — je brein maakt ze.",
-  "Een teepel gaat sneller dood dan een aardbei als je ze allebei uitdrogt. Maar dat wist je niet.",
-  "Het internet weegt technisch gezien iets — alle elektronen in beweging hebben massa. Geschat: 50 gram.",
-];
-
-// ── DAY INDEX (elke dag ander content) ────────────────────────────────
-function getDayIndex(arr) {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start;
-  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-  return dayOfYear % arr.length;
+function getDayFallback(arr) {
+  const d = new Date();
+  return arr[(Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000)) % arr.length];
 }
 
-function formatDate() {
-  return new Date().toLocaleDateString('nl-NL', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+// ══════════════════════════════════════════════════════════════
+// API KEY BEHEER
+// ══════════════════════════════════════════════════════════════
+const KEY_STORE = 'remy_gemini_key';
+const CACHE_STORE = 'remy_daily_cache_v2';
+
+function getApiKey() {
+  try { return localStorage.getItem(KEY_STORE) || ''; } catch { return ''; }
+}
+
+function saveApiKey() {
+  const val = document.getElementById('apikey-input').value.trim();
+  if (!val || !val.startsWith('AIza')) {
+    alert('❌ Dat ziet er niet uit als een geldige Gemini API key. Begin met "AIza..."');
+    return;
+  }
+  // REMY: dit is ALLEEN je Gemini API key, niet je wachtwoord
+  try { localStorage.setItem(KEY_STORE, val); } catch {}
+  closeApiKeyModal();
+  clearDailyCache();
+  openPopup();
+  loadDailyContent();
+}
+
+function skipApiKey() {
+  closeApiKeyModal();
+  openPopup();
+  loadFallbackContent('Fallback quotes');
+}
+
+function openApiKeyModal() {
+  document.getElementById('apikey-modal').classList.add('show');
+  const existing = getApiKey();
+  if (existing) document.getElementById('apikey-input').value = existing;
+}
+
+function closeApiKeyModal() {
+  document.getElementById('apikey-modal').classList.remove('show');
+}
+
+function clearDailyCache() {
+  try { localStorage.removeItem(CACHE_STORE); } catch {}
+}
+
+// ══════════════════════════════════════════════════════════════
+// GEMINI API CALL
+// ══════════════════════════════════════════════════════════════
+async function fetchFromGemini(apiKey) {
+  const today = new Date().toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long' });
+
+  const prompt = `Genereer voor vandaag (${today}) drie unieke Nederlandse items voor een persoonlijke AI hub pagina van Remy (36 jaar, man, gezin, gamer, smarthome, fitness). 
+
+Geef ALLEEN dit JSON terug, zonder uitleg of markdown:
+{
+  "quote": "een originele motiverende quote in het Nederlands (max 2 zinnen, niet cliché)",
+  "hack": "een praktische life hack of productiviteitstip in het Nederlands (max 2 zinnen, concreet en bruikbaar)",
+  "fact": "een interessant, verrassend of grappig feit in het Nederlands (max 2 zinnen, echt waar)"
+}`;
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.95, maxOutputTokens: 400 }
+      })
+    }
+  );
+
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const cleaned = raw.replace(/```json|```/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DAILY CONTENT LOGICA
+// ══════════════════════════════════════════════════════════════
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function getCachedContent() {
+  try {
+    const raw = localStorage.getItem(CACHE_STORE);
+    if (!raw) return null;
+    const { key, content } = JSON.parse(raw);
+    if (key === getTodayKey()) return content;
+    return null;
+  } catch { return null; }
+}
+
+function setCachedContent(content) {
+  try {
+    localStorage.setItem(CACHE_STORE, JSON.stringify({ key: getTodayKey(), content }));
+  } catch {}
+}
+
+function setPopupContent(quote, hack, fact, source) {
+  document.getElementById('popup-quote').textContent = quote;
+  document.getElementById('popup-hack').textContent  = hack;
+  document.getElementById('popup-fact').textContent  = fact;
+  document.getElementById('ai-source-label').textContent = source;
+}
+
+function loadFallbackContent(label) {
+  setPopupContent(
+    getDayFallback(FALLBACK.quotes),
+    getDayFallback(FALLBACK.hacks),
+    getDayFallback(FALLBACK.facts),
+    label || 'Dagelijkse selectie'
+  );
+}
+
+async function loadDailyContent() {
+  // Check cache eerst
+  const cached = getCachedContent();
+  if (cached) {
+    setPopupContent(cached.quote, cached.hack, cached.fact, '✓ Gemini — gecached');
+    return;
+  }
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    loadFallbackContent('Fallback — stel API key in');
+    return;
+  }
+
+  // Toon shimmer loading state
+  ['popup-quote','popup-hack','popup-fact'].forEach(id => {
+    document.getElementById(id).innerHTML =
+      '<div class="loading-shimmer"></div><div class="loading-shimmer"></div>';
   });
+
+  try {
+    const result = await fetchFromGemini(apiKey);
+    setCachedContent(result);
+    setPopupContent(result.quote, result.hack, result.fact, '✨ Gemini gegenereerd');
+  } catch (err) {
+    console.warn('Gemini API fout:', err);
+    loadFallbackContent('Fallback (API tijdelijk niet beschikbaar)');
+  }
 }
 
-// ── POPUP LOGIC ───────────────────────────────────────────────────────
-function fillPopup() {
-  document.getElementById('popup-date').textContent = formatDate();
-  document.getElementById('popup-quote').textContent = QUOTES[getDayIndex(QUOTES)];
-  document.getElementById('popup-hack').textContent  = LIFEHACKS[getDayIndex(LIFEHACKS)];
-  document.getElementById('popup-fact').textContent  = FACTS[getDayIndex(FACTS)];
-}
-
-function closePopup() {
-  const overlay = document.getElementById('popup-overlay');
-  overlay.style.opacity = '0';
-  overlay.style.transition = 'opacity 0.3s';
-  setTimeout(() => overlay.style.display = 'none', 300);
+// ══════════════════════════════════════════════════════════════
+// POPUP LOGICA
+// ══════════════════════════════════════════════════════════════
+function formatDate() {
+  return new Date().toLocaleDateString('nl-NL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
 
 function openPopup() {
-  const overlay = document.getElementById('popup-overlay');
-  overlay.style.display = 'flex';
-  overlay.style.opacity = '0';
-  setTimeout(() => { overlay.style.transition = 'opacity 0.3s'; overlay.style.opacity = '1'; }, 10);
+  const o = document.getElementById('popup-overlay');
+  o.style.display = 'flex';
+  document.getElementById('popup-date').textContent = formatDate();
 }
 
-// Sluit popup met Escape
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    const overlay = document.getElementById('popup-overlay');
-    if (overlay.style.display !== 'none') { closePopup(); return; }
-  }
-});
+function closePopup() {
+  const o = document.getElementById('popup-overlay');
+  o.style.opacity = '1';
+  o.style.transition = 'opacity 0.25s';
+  o.style.opacity = '0';
+  setTimeout(() => o.style.display = 'none', 260);
+}
 
-// Klik buiten popup = sluiten
 document.getElementById('popup-overlay').addEventListener('click', function(e) {
   if (e.target === this) closePopup();
 });
 
-fillPopup();
-
-// ── LAST USED ─────────────────────────────────────────────────────────
-const STORAGE_KEY = 'remy_hub_recent_v2';
-
-function getRecent() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
-}
-
+// ══════════════════════════════════════════════════════════════
+// LAST USED
+// ══════════════════════════════════════════════════════════════
+const REC_KEY = 'remy_hub_recent_v2';
+function getRecent() { try { return JSON.parse(localStorage.getItem(REC_KEY) || '[]'); } catch { return []; } }
 function saveRecent(href) {
-  let list = getRecent().filter(h => h !== href);
-  list.unshift(href);
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 3))); } catch {}
+  let l = getRecent().filter(h => h !== href); l.unshift(href);
+  try { localStorage.setItem(REC_KEY, JSON.stringify(l.slice(0,3))); } catch {}
 }
-
 function applyRecent() {
-  const recent = getRecent();
-  document.querySelectorAll('.card').forEach(card => {
-    const match = recent.some(r => card.getAttribute('href') === r);
-    card.classList.toggle('recent', match);
-  });
+  const r = getRecent();
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('recent', r.includes(c.getAttribute('href'))));
 }
-
-document.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('click', () => saveRecent(card.getAttribute('href')));
-});
-
+document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => saveRecent(c.getAttribute('href'))));
 applyRecent();
 
-// ── KEYBOARD SHORTCUTS ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
   const active = document.activeElement;
   const typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
-
-  if (e.key === '/' && !typing) {
-    e.preventDefault();
-    document.getElementById('search').focus();
-    return;
-  }
-  if (e.key === 'Escape' && typing) {
-    active.blur();
-    filterCards('');
-    document.getElementById('search').value = '';
+  if (e.key === '/' && !typing) { e.preventDefault(); document.getElementById('search').focus(); return; }
+  if (e.key === 'Escape') {
+    if (document.getElementById('apikey-modal').classList.contains('show')) { closeApiKeyModal(); return; }
+    if (document.getElementById('popup-overlay').style.display !== 'none') { closePopup(); return; }
+    if (typing) { active.blur(); filterCards(''); document.getElementById('search').value = ''; }
     return;
   }
   if (typing) return;
-
   const num = parseInt(e.key);
   if (num >= 1 && num <= 9) {
     const card = document.querySelector(`.card[data-key="${num}"]`);
@@ -769,29 +711,42 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ── SEARCH ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════════
 const searchEl = document.getElementById('search');
-const noResults = document.getElementById('no-results');
-const noResultsTerm = document.getElementById('no-results-term');
-
-function filterCards(query) {
-  const q = query.toLowerCase().trim();
+function filterCards(q) {
+  q = q.toLowerCase().trim();
   let total = 0;
-  document.querySelectorAll('.section').forEach(section => {
+  document.querySelectorAll('.section').forEach(s => {
     let vis = 0;
-    section.querySelectorAll('.card').forEach(card => {
-      const match = !q || card.textContent.toLowerCase().includes(q);
-      card.classList.toggle('hidden', !match);
-      if (match) vis++;
+    s.querySelectorAll('.card').forEach(c => {
+      const m = !q || c.textContent.toLowerCase().includes(q);
+      c.classList.toggle('hidden', !m);
+      if (m) vis++;
     });
-    section.classList.toggle('empty', vis === 0);
+    s.classList.toggle('empty', vis === 0);
     total += vis;
   });
-  noResults.style.display = (!total && q) ? 'block' : 'none';
-  noResultsTerm.textContent = query;
+  const nr = document.getElementById('no-results');
+  nr.style.display = (!total && q) ? 'block' : 'none';
+  document.getElementById('no-results-term').textContent = q;
 }
-
 searchEl.addEventListener('input', e => filterCards(e.target.value));
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  const hasKey = !!getApiKey();
+  if (!hasKey) {
+    // Eerste keer: toon API key modal vóór popup
+    openApiKeyModal();
+  } else {
+    openPopup();
+    loadDailyContent();
+  }
+});
 </script>
 </body>
 </html>
