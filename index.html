@@ -977,7 +977,7 @@ function loadProfile() {
   }
 }
 function saveProfile() {
-  const naam=document.getElementById('setup-naam').value.trim();
+  const naam=sanitize(document.getElementById('setup-naam').value.trim());
   if(!naam){showToast('❌ Vul je naam in!',true);return;}
   localStorage.setItem('bb_naam',naam);
   loadProfile();showToast('✅ Naam opgeslagen!');
@@ -1040,11 +1040,16 @@ function kortingsPerc(n,d){if(!n||n<=0)return 0;return Math.round((1-d/n)*100);}
 function timeAgo(ts){const d=(Date.now()-new Date(ts))/1000;if(d<60)return 'zojuist';if(d<3600)return Math.floor(d/60)+' min';if(d<86400)return Math.floor(d/3600)+' uur';return Math.floor(d/86400)+' dag geleden';}
 function verlooptIn(ts){const d=(new Date(ts)-Date.now())/1000;if(d<3600)return 'verloopt binnenkort';if(d<86400)return 'verloopt vanavond';const dagen=Math.ceil(d/86400);return `nog ${dagen} dag${dagen!==1?'en':''}`;}
 
+// Strips HTML tags — voorkomt XSS bij opslaan
+function sanitize(str){if(!str)return '';return str.replace(/<[^>]*>/g,'').replace(/[<>'"]/g,'').trim();}
+// Escaped HTML voor weergave in innerHTML
+function esc(str){if(!str)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
 // === DEALS ===
 function renderDeal(deal){
   const disc=kortingsPerc(deal.normaal_prijs,deal.deal_prijs);
   const prijsHtml = deal.deal_label
-    ? `<span class="deal-price" style="font-size:20px">${deal.deal_label}</span>`
+    ? `<span class="deal-price" style="font-size:20px">${esc(deal.deal_label)}</span>`
     : `<span class="deal-price">€${Number(deal.deal_prijs).toFixed(2)}</span>
        ${deal.normaal_prijs?`<span class="old-price">€${Number(deal.normaal_prijs).toFixed(2)}</span>`:''}
        ${disc>0?`<span class="discount-badge">-${disc}%</span>`:''}`;
@@ -1053,26 +1058,26 @@ function renderDeal(deal){
   const isHeet=deal.votes>=10;
   const vTxt=deal.verloopt_op?verlooptIn(deal.verloopt_op):'';
   const foto=deal.foto_url
-    ?`<img class="deal-foto" src="${deal.foto_url}" loading="lazy" onerror="this.style.display='none'">`
+    ?`<img class="deal-foto" src="${esc(deal.foto_url)}" loading="lazy" onerror="this.style.display='none'">`
     :`<div class="deal-foto-placeholder">${deal.emoji||'🛒'}</div>`;
-  return `<div class="deal-card" id="deal-${deal.id}" data-supermarkt="${deal.supermarkt}" data-buurt="${deal.stad}" data-emoji="${deal.emoji||'🛒'}">
+  return `<div class="deal-card" id="deal-${deal.id}" data-supermarkt="${esc(deal.supermarkt)}" data-buurt="${esc(deal.stad)}" data-emoji="${deal.emoji||'🛒'}">
     ${foto}
     <div class="card-top">
       <div class="user-info">
         <div class="avatar">${deal.emoji||'🛒'}</div>
-        <div><div class="user-name">@${deal.gebruiker_naam}</div><div class="user-meta">📍 ${deal.stad} · ${timeAgo(deal.aangemaakt_op)}</div></div>
+        <div><div class="user-name">@${esc(deal.gebruiker_naam)}</div><div class="user-meta">📍 ${esc(deal.stad)} · ${timeAgo(deal.aangemaakt_op)}</div></div>
       </div>
-      <span class="${getBadgeClass(deal.supermarkt)}">${deal.supermarkt}</span>
+      <span class="${getBadgeClass(deal.supermarkt)}">${esc(deal.supermarkt)}</span>
     </div>
     <div class="card-body">
-      <div class="deal-product">${deal.product}</div>
+      <div class="deal-product">${esc(deal.product)}</div>
       <div class="price-row">${prijsHtml}</div>
-      ${deal.beschrijving?`<div class="deal-desc">${deal.beschrijving}</div>`:''}
+      ${deal.beschrijving?`<div class="deal-desc">${esc(deal.beschrijving)}</div>`:''}
       <div>${isHeet?`<span class="heet-badge">🔥 HEET</span>`:''} ${vTxt?`<span class="verloopt-badge">⏰ ${vTxt}</span>`:''}</div>
     </div>
     <div class="card-bottom">
       <button class="vote-btn${voted?' voted':''}" onclick="voteDeal('${deal.id}',this)" ${voted?'disabled':''}>🙌 ${deal.votes||0} Echt waar${voted?' ✓':''}</button>
-      <button class="share-btn" onclick="openShare('${deal.id}','${deal.product}','${deal.supermarkt}','${deal.stad}',${deal.deal_prijs},${deal.normaal_prijs||0})">📤</button>
+      <button class="share-btn" onclick="openShare('${deal.id}','${esc(deal.product)}','${esc(deal.supermarkt)}','${esc(deal.stad)}',${deal.deal_prijs||0},${deal.normaal_prijs||0})">📤</button>
       <button class="meld-btn${gemeld?' gemeld':''}" onclick="openMeld('${deal.id}')" ${gemeld?'disabled':''}>${gemeld?'✓':'🚨'}</button>
     </div>
   </div>`;
@@ -1147,11 +1152,11 @@ async function postDeal(){
   let fotoUrl=null;
   if(selectedFotoFile)fotoUrl=await uploadFoto(selectedFotoFile);
   const{error}=await sb.from('deals').insert({
-    gebruiker_naam:naam,supermarkt,stad:buurt,product,
+    gebruiker_naam:sanitize(naam),supermarkt:sanitize(supermarkt),stad:sanitize(buurt),product:sanitize(product),
     normaal_prijs:normaalPrijs||null,
     deal_prijs:dealPrijs||null,
-    deal_label:dealLabel||null,
-    beschrijving:desc||null,emoji:selectedEmoji,
+    deal_label:dealLabel?sanitize(dealLabel):null,
+    beschrijving:desc?sanitize(desc):null,emoji:selectedEmoji,
     votes:0,foto_url:fotoUrl,
     verloopt_op:getVerloopDate().toISOString()
   });
@@ -1205,8 +1210,8 @@ async function verwijderBuurt(id, naam) {
 }
 
 async function maakBuurt(){
-  const naam=document.getElementById('b-naam').value.trim();
-  const postcode=document.getElementById('b-postcode').value.trim();
+  const naam=sanitize(document.getElementById('b-naam').value.trim());
+  const postcode=document.getElementById('b-postcode').value.trim().replace(/[^0-9]/g,'');
   if(!naam){showToast('❌ Vul een naam in!',true);return;}
   const{error}=await sb.from('buurten').insert({naam,postcode:postcode||null});
   if(error){showToast('❌ Fout: '+error.message,true);return;}
