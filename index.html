@@ -264,7 +264,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   <div class="logo" id="logoBtn">Bonus<span>Buurt</span></div>
   <div style="display:flex;align-items:center;gap:8px;">
     <button class="info-btn" onclick="openInfo()">?</button>
-    <span class="versie-badge">v13</span>
+    <span class="versie-badge">v14</span>
     <div class="live-pill"><div class="live-dot"></div><span id="dealCount">0</span> deals</div>
   </div>
 </div>
@@ -517,7 +517,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       Deals verdwijnen automatisch na de einddatum.<br>
       Geen account nodig — gewoon je naam invullen en posten.
     </div>
-    <button class="submit-btn" style="margin-top:16px" onclick="document.getElementById('infoModal').style.display='none'">✅ Begrepen!</button>
+    <button class="submit-btn" style="margin-top:16px" onclick="sluitInfo()">✅ Begrepen!</button>
   </div>
 </div>
 
@@ -652,6 +652,17 @@ function openInfo() {
   document.getElementById('infoModal').style.display = 'flex';
 }
 
+function sluitInfo() {
+  document.getElementById('infoModal').style.display = 'none';
+  localStorage.setItem('bb_welkom_gezien', '1');
+}
+
+function checkWelkom() {
+  if (!localStorage.getItem('bb_welkom_gezien')) {
+    setTimeout(() => openInfo(), 600);
+  }
+}
+
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
   initFilters();
@@ -663,6 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLogo();
   initDealType();
   loadDeals();
+  checkWelkom();
 });
 
 // === LOGO 5x klik = admin ===
